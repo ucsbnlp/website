@@ -91,12 +91,16 @@
 
 
     <h3>Overview</h3>
-<p>What do language models memorize? As the creation and adoption of natural language generation (NLG) models increases, questions arise regarding the information these models learn. While it is known that NLG models produce biased and harmful text, most studies do not evaluate what leads to these generations: memorization of training data. In our ACL 2021 Findings <a href="https://aclanthology.org/2021.findings-acl.416/">paper</a>, we aim to determine the extent to which GPT-2 (and other language models) memorizes and generates harmful information. Unlike previous studies, we perform our analysis <strong>without access to the model's training data</strong>. While this makes the task of detecting memorized data more difficult, it allows our methods to generalize to models that do not release their large-scale training sets alongside published models. Additionally, we perform our analysis with regards to a particularly dangerous type of misinformation: conspiracy theories. We propose methods to evaluate the memorization of this text, through various model settings and linguistic analysis. </p>
+<p>What do language models memorize? As the creation and adoption of natural language generation (NLG) models increases, questions arise regarding the information these models learn. While it is known that NLG models produce biased and harmful text, most studies do not evaluate what leads to these generations: memorization of training data. </p>
+<p>In our ACL 2021 Findings <a href="https://aclanthology.org/2021.findings-acl.416/">paper</a>, we aim to determine the extent to which GPT-2 (and other language models) memorizes and generates harmful information. Unlike previous studies, we perform our analysis <strong>without access to the model's training data</strong>. While this makes the task of detecting memorized data more difficult, it allows our methods to generalize to models that do not release their large-scale training sets alongside published models. Additionally, we perform our analysis with regards to a particularly dangerous type of misinformation: conspiracy theories. </p>
+<p>We propose methods to evaluate the memorization of this text, through various model settings and linguistic analysis. </p>
 <h3>Memorization in NLG Models</h3>
-<p>In general, generated text can be broken down into three categories:
-1. Memorized: generated text with exact matches existing within the training data.
-2. Generalized: generations that do not have exact matches in the data but produce text that follows the same ideas as those in the training data.
-3. Hallucinated: generations about topics that are neither factually correct nor follow any of the existing conspiracy theories surrounding the topic</p>
+<p>In general, generated text can be broken down into three categories:</p>
+<ol>
+<li>Memorized: generated text with exact matches existing within the training data.</li>
+<li>Generalized: generations that do not have exact matches in the data but produce text that follows the same ideas as those in the training data.</li>
+<li>Hallucinated: generations about topics that are neither factually correct nor follow any of the existing conspiracy theories surrounding the topic</li>
+</ol>
 <p>Most studies either evaluate memorized vs. generalized text or group memorized and generalized text together to evaluate against hallucinated text. As distinguishing among these three categories without access to training data is exceptionally difficult, we consider both memorized and generalized text as "memorized".</p>
 <h3>Varying Model Settings</h3>
 <h4>Human Evaluation</h4>
