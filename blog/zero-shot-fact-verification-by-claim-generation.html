@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Zero-shot Fact Verification by Claim Generation - UCSB NLP Blog</title>
+        <meta name="description" content="The UC Santa Barbara NLP group studies the theoretical foundation and practical algorithms for language technologies. We tackle challenging learning and reasoning problems under uncertainty, and pursue answers via studies of machine Learning, deep Learning, and interdisciplinary data science.">
+        <meta name="keywords" content="UCSB,UC Santa Barbara,NLP,Natural Language Processing,William Wang,Computer Science,Reinforcement Learning,Deep Learning">
+        <meta name="author" content="UCSB NLP Group">
+
+        <link rel="icon" href="../static/favicon.ico">
+
+        <link rel="stylesheet" href="../css/bootstrap.min.css">
+        <link rel="stylesheet" href="../css/fonts.css">
+        <link rel="stylesheet" href="../css/custom.css">
+        <link rel="stylesheet" href="./theme/css/code.css">
+        <!-- FOR KATEX -->
+        <link rel="stylesheet"
+              href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css"
+              crossorigin="anonymous">
+        <link href="feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="UCSB NLP Blog Full Atom Feed" />
+        <link href="feeds/all.rss.xml" type="application/rss+xml" rel="alternate" title="UCSB NLP Blog Full RSS Feed" />
+    </head>
+
+    <body style="margin:0px;padding:0px;">
+        <nav class="navbar navbar-expand-lg navbar-dark navbar-custom navbar-static-top">
+            <div class="container">
+                <a class="navbar-brand" href="index.html"><b>UC SANTA BARBARA NLP GROUP</b></a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#content" aria-controls="navbarsExample07" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="content">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="../index.html">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../people.html">People</a>
+                        </li>
+                        <li class="nav-item active">
+                            <a class="nav-link" href="index.html"><b>Blog</b></a>
+                        </li>                        
+                        <li class="nav-item">
+                            <a class="nav-link" href="../publications.html">Publications</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../software.html">Software</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../sponsor.html">Sponsors</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="http://www.cs.ucsb.edu/~william/hiring.html" target="_blank">Join Us</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../contact.html">Contact</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <br/>
+        <br/>
+
+        <div class="container" align="justify">
+            <div class="row justify-content-center">
+
+<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 thumb">
+    <h2><a href="./zero-shot-fact-verification-by-claim-generation.html" rel="bookmark"
+         title="Permalink to Zero-shot Fact Verification by Claim Generation">Zero-shot Fact Verification by Claim Generation</a></h2>
+</div>
+
+<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 thumb">
+      <h5><a href="./author/liangming-pan.html">Liangming Pan</a></h5>
+    <b>Sun 01 August 2021</b>
+</div>
+
+<div class="text-right col-lg-6 col-md-6 col-sm-6 col-xs-6 thumb">
+    <b>Category: <a href="./category/acl-2021.html">ACL 2021</a><br>
+    Tags: <a href="./tag/fact-checking.html">Fact Checking</a>, <a href="./tag/question-generation.html">Question Generation</a>, <a href="./tag/claim-generation.html">Claim Generation</a>, <a href="./tag/zero-shot-learning.html">Zero-shot Learning</a></b>
+</div>
+
+<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 thumb blogcontent">
+    <hr>
+</div>
+
+<div class="col-lg-8 col-md-8 col-sm-8 col-xs-8 thumb blogcontent">
+
+
+    <h3>Introduction</h3>
+<p><strong>Fact verification</strong> aims to validate a claim in the context of evidence. Given a claim <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="script">C</mi></mrow><annotation encoding="application/x-tex">\mathcal{C}</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord"><span class="mord mathcal" style="margin-right:0.05834em;">C</span></span></span></span></span> and a piece of evidence <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="script">P</mi></mrow><annotation encoding="application/x-tex">\mathcal{P}</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord"><span class="mord mathcal" style="margin-right:0.08222em;">P</span></span></span></span></span> as inputs, a fact verification model <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="script">F</mi></mrow><annotation encoding="application/x-tex">\mathcal{F}</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord"><span class="mord mathcal" style="margin-right:0.09931em;">F</span></span></span></span></span> predicts a label <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="script">Y</mi><mo>∈</mo><mo stretchy="false">{</mo><mtext mathvariant="monospace">supported</mtext><mo separator="true">,</mo><mtext mathvariant="monospace">refuted</mtext><mo separator="true">,</mo><mtext mathvariant="monospace">NEI</mtext><mo stretchy="false">}</mo></mrow><annotation encoding="application/x-tex">\mathcal{Y} \in \{\texttt{supported}, \texttt{refuted}, \texttt{NEI} \}</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.78055em;vertical-align:-0.09722em;"></span><span class="mord"><span class="mord mathcal" style="margin-right:0.08222em;">Y</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">∈</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">{</span><span class="mord text"><span class="mord texttt">supported</span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord text"><span class="mord texttt">refuted</span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord text"><span class="mord texttt">NEI</span></span><span class="mclose">}</span></span></span></span> to verify whether <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="script">C</mi></mrow><annotation encoding="application/x-tex">\mathcal{C}</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord"><span class="mord mathcal" style="margin-right:0.05834em;">C</span></span></span></span></span> is supported, refuted, or can not be verified by the information in <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="script">P</mi></mrow><annotation encoding="application/x-tex">\mathcal{P}</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord"><span class="mord mathcal" style="margin-right:0.08222em;">P</span></span></span></span></span>. Fact verification task has attracted growing interest with the rise in disinformation in news and social media. Rapid progress has been made by training large neural models on the <a href="https://arxiv.org/abs/1803.05355">FEVER dataset</a>, containing more than 100K human-crafted (evidence, claim) pairs based on Wikipedia.</p>
+<p>Fact verification is demanded in many domains, including news articles, social media, and scientific documents. However, it is not realistic to assume that large-scale training data is available for every new domain that requires fact verification. Creating training data by asking humans to write claims and search for evidence to support/refute them can be extremely costly. </p>
+<h4>Zero/Few-shot Fact Verification</h4>
+<p>Could we train a good fact checking model without human annotation? <strong>We explore this possibility of automatically generating large-scale (evidence, claim, label) data to train the fact verification model.</strong> </p>
+<p>As illustrated in Figure 1 below, we propose a simple yet general framework <strong>Question Answering for Claim Generation (QACG)</strong> to generate three types of claims from any given evidence: </p>
+<ol>
+<li>Claims that are supported by the evidence</li>
+<li>Claims that are refuted by the evidence</li>
+<li>Claims that the evidence does Not have Enough Information (NEI) to verify</li>
+</ol>
+<p><strong>Zero-shot Fact Verification</strong>: We assume no human-annotated training example is available. We only use the generated (evidence, claim, label) data are used to train the fact verification model. </p>
+<p><strong>Few-shot Fact Verification</strong>: We assume only a few human-labeled (evidence, claim) pairs are available. We first train the fact verification model with the generated data. Then we fine-tune the model with the limited amount of human-labeled data. </p>
+<hr>
+</div>
+<div class="col-lg-8 col-md-8 col-sm-8 col-xs-8 thumb blogcontent">
+<img alt="zero-shot-fact-verification" class="img-fluid" src="images/2108/zero-shot-fact-verification.png" class="img-fluid">
+<br><br></div><div class="col-lg-8 col-md-8 col-sm-8 col-xs-8 thumb blogcontent"><p><b>Figure 1</b>&mdash;<em>Our zero-shot fact verification framework.</em></p>
+<hr><br>
+<h4>Main Observations</h4>
+<p><strong>Reducing Human Labor</strong>: pretraining the fact verification model with generated claims greatly reduces the demand for in-domain human annotation. 
+- <strong>Zero-shot Setting</strong>: Although we do not use any human-labeled training examples, the model achieves over 70% of the F1 performance of a fully-supervised setting. 
+- <strong>Few-shot Setting</strong>: By fine-tuning the model with only 100 labeled examples, we further close the performance gap, achieving 89.1% of fully-supervised performance. </p>
+<p><strong>Improving Robustness</strong>: When evaluating the model on an unbiased test set for FEVER, we find that training with generated claims also produces a more robust fact verification model. </p>
+<h3><strong>Claim Generation Model</strong></h3>
+<p>As illustrated in Figure 2 below, our claim generation model QACG has two major components: </p>
+<h4>Question Generator</h4>
+<p>A <strong>Question Generator</strong> <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="script">G</mi></mrow><annotation encoding="application/x-tex">\mathcal{G}</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.78055em;vertical-align:-0.09722em;"></span><span class="mord"><span class="mord mathcal" style="margin-right:0.0593em;">G</span></span></span></span></span> takes as input an evidence <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi></mrow><annotation encoding="application/x-tex">P</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.13889em;">P</span></span></span></span> and a text span <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi></mrow><annotation encoding="application/x-tex">A</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault">A</span></span></span></span> from the given evidence and aims to generate a question <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi></mrow><annotation encoding="application/x-tex">Q</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.8777699999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">Q</span></span></span></span> with <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi></mrow><annotation encoding="application/x-tex">A</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault">A</span></span></span></span> as the answer. We implement this with the <a href="https://arxiv.org/abs/1910.13461">BART model</a>, a large transformer-based sequence-to-sequence model pretrained on 160GB of text. The model is finetuned on the SQuAD dataset processed by <a href="https://arxiv.org/abs/1704.01792">Zhou et al. (2017)</a>, where the model encodes the concatenation of the SQuAD passage and the answer text and then learns to decode the question. </p>
+<h4>QA-to-Claim model</h4>
+<p>The <strong>QA-to-Claim model</strong> <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="script">M</mi></mrow><annotation encoding="application/x-tex">\mathcal{M}</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord"><span class="mord mathcal">M</span></span></span></span></span> takes as inputs <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi></mrow><annotation encoding="application/x-tex">Q</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.8777699999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">Q</span></span></span></span> and <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi></mrow><annotation encoding="application/x-tex">A</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault">A</span></span></span></span>, and outputs the declarative sentence <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi></mrow><annotation encoding="application/x-tex">C</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.07153em;">C</span></span></span></span> for the <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi>Q</mi><mo separator="true">,</mo><mi>A</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(Q, A)</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathdefault">Q</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault">A</span><span class="mclose">)</span></span></span></span> pair. We also treat this as a sequence-to-sequence problem and finetune the BART model on the <a href="https://arxiv.org/abs/1809.02922">QA2D dataset</a>, which contains the human-annotated declarative sentence for each <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi>Q</mi><mo separator="true">,</mo><mi>A</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(Q, A)</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathdefault">Q</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault">A</span><span class="mclose">)</span></span></span></span> pair in SQuAD. </p>
+<hr>
+</div>
+<div class="col-lg-10 col-md-10 col-sm-10 col-xs-10 thumb blogcontent">
+<img alt="framework" src="images/2108/framework.png" class="img-fluid">
+<br><br></div><div class="col-lg-8 col-md-8 col-sm-8 col-xs-8 thumb blogcontent"><p><b>Figure 2</b>&mdash;<em>Our claim generation model.</em></p>
+<hr><br>
+<h3>Using the Model to Generate Claims</h3>
+<p>Given the pretrained question generator <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi></mrow><annotation encoding="application/x-tex">G</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault">G</span></span></span></span> and the QA-to-Claim model <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi></mrow><annotation encoding="application/x-tex">M</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.10903em;">M</span></span></span></span>, we then formally introduce how we generate claims with different labels. </p>
+<h4><em>Supported</em> Claim Generation</h4>
+<p>Given an evidence <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi></mrow><annotation encoding="application/x-tex">P</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.13889em;">P</span></span></span></span>, we use named entity recognition to identify all entities within <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi></mrow><annotation encoding="application/x-tex">P</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.13889em;">P</span></span></span></span>. We treat each identified entity <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi></mrow><annotation encoding="application/x-tex">a</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">a</span></span></span></span> as an answer and generate a question <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi></mrow><annotation encoding="application/x-tex">q</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">q</span></span></span></span> with the question generator. The question–answer pair <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi>q</mi><mo separator="true">,</mo><mi>a</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(q, a)</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.03588em;">q</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault">a</span><span class="mclose">)</span></span></span></span> are then sent to the QA-to-Claim model to generate the supported claim <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>c</mi></mrow><annotation encoding="application/x-tex">c</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">c</span></span></span></span>. </p>
+<h4><em>Refuted</em> Claim Generation</h4>
+<p>To generate a refuted claim, after we generate the question–answer pair <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi>q</mi><mo separator="true">,</mo><mi>a</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(q, a)</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.03588em;">q</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault">a</span><span class="mclose">)</span></span></span></span>, we use <strong>answer replacement</strong> to replace the answer <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi></mrow><annotation encoding="application/x-tex">a</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">a</span></span></span></span> with another entity <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>a</mi><mo lspace="0em" mathvariant="normal" rspace="0em">′</mo></msup></mrow><annotation encoding="application/x-tex">a'</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.751892em;vertical-align:0em;"></span><span class="mord"><span class="mord mathdefault">a</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.751892em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span></span></span></span> with the same type such that <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>a</mi><mo lspace="0em" mathvariant="normal" rspace="0em">′</mo></msup></mrow><annotation encoding="application/x-tex">a'</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.751892em;vertical-align:0em;"></span><span class="mord"><span class="mord mathdefault">a</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.751892em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span></span></span></span> becomes an incorrect answer to the question <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi></mrow><annotation encoding="application/x-tex">q</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">q</span></span></span></span>. Using <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi></mrow><annotation encoding="application/x-tex">a</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">a</span></span></span></span> as the query, we randomly sample a phrase from the top-5 most similar phrases in the pretrained <a href="https://github.com/explosion/sense2vec">Sense2Vec</a> as the replacing answer <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>a</mi><mo lspace="0em" mathvariant="normal" rspace="0em">′</mo></msup></mrow><annotation encoding="application/x-tex">a'</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.751892em;vertical-align:0em;"></span><span class="mord"><span class="mord mathdefault">a</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.751892em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span></span></span></span>. The new pair <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi>q</mi><mo separator="true">,</mo><msup><mi>a</mi><mo lspace="0em" mathvariant="normal" rspace="0em">′</mo></msup><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(q, a')</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:1.001892em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.03588em;">q</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault">a</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.751892em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span> is then fed to the QA-to-Claim model to generate the refuted claim. </p>
+<h4><em>NEI</em> Claim Generation</h4>
+<p>We need to generate a question <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>q</mi><mo lspace="0em" mathvariant="normal" rspace="0em">′</mo></msup></mrow><annotation encoding="application/x-tex">q'</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.946332em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.03588em;">q</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.751892em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span></span></span></span> which is relevant but cannot be answered by <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi></mrow><annotation encoding="application/x-tex">P</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.13889em;">P</span></span></span></span>. To this end, we link <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi></mrow><annotation encoding="application/x-tex">P</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.13889em;">P</span></span></span></span> back to its original Wikipedia article <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>W</mi></mrow><annotation encoding="application/x-tex">W</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.13889em;">W</span></span></span></span> and expand the evidence with additional contexts <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mrow><mi>e</mi><mi>x</mi><mi>t</mi></mrow></msub></mrow><annotation encoding="application/x-tex">P_{ext}</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2805559999999999em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">e</span><span class="mord mathdefault mtight">x</span><span class="mord mathdefault mtight">t</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>, which are five randomly-retrieved sentences from <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>W</mi></mrow><annotation encoding="application/x-tex">W</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.13889em;">W</span></span></span></span> that are not present in <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi></mrow><annotation encoding="application/x-tex">P</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.13889em;">P</span></span></span></span>. As shown in the example in the above Figure, one additional context retrieved is "By the time the riots ended, 63 people had been killed". We then concatenate <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi></mrow><annotation encoding="application/x-tex">P</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.13889em;">P</span></span></span></span> and <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mrow><mi>e</mi><mi>x</mi><mi>t</mi></mrow></msub></mrow><annotation encoding="application/x-tex">P_{ext}</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2805559999999999em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">e</span><span class="mord mathdefault mtight">x</span><span class="mord mathdefault mtight">t</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> as the expanded evidence, based on which we generate a supported claim given an entity in <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mrow><mi>e</mi><mi>x</mi><mi>t</mi></mrow></msub></mrow><annotation encoding="application/x-tex">P_{ext}</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2805559999999999em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">e</span><span class="mord mathdefault mtight">x</span><span class="mord mathdefault mtight">t</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> as the answer (e.g., "63"). This results in a claim relevant to but unverifiable by the original evidence <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi></mrow><annotation encoding="application/x-tex">P</annotation></semantics></math></span><span aria-hidden="true" class="katex-html"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.13889em;">P</span></span></span></span>.  </p>
+<h3>Experiments</h3>
+<p>By applying our QACG model to each of the 18,541 Wikipedia articles in the FEVER training set, we generate a total number of 176,370 supported claims, 360,924 refuted claims, and 258,452 NEI claims. </p>
+<h4>Evaluation Datasets</h4>
+<ul>
+<li><strong>FEVER-S/R</strong>: Since only the supported and refuted claims are labeled with gold evidence in FEVER, we take the claim–evidence pairs of these two classes from the FEVER test set for evaluation.</li>
+<li><strong>FEVER-Symmetric</strong>: this is a carefully-designed unbiased test set designed by <a href="https://arxiv.org/abs/1908.05267">Schuster et al. (2019)</a> to detect the robustness of the fact verification model. Only supported and refuted claims are present in this test set. </li>
+<li><strong>FEVER-S/R/N</strong>: The full FEVER test set are used for a three-class verification. We use the system of <a href="https://arxiv.org/abs/1901.02534">Malon (2019)</a> to retrieve evidence sentences for NEI claims. </li>
+</ul>
+<h4>Zero-shot Fact Verification</h4>
+<p>Models for comparison: </p>
+<ul>
+<li><strong>Supervised</strong>: the RoBERTa-large model fine-tuned on the FEVER training set as the supervised model. </li>
+<li><strong>QACG</strong>: the RoBERTa-large model fine-tuned on our generated training set. </li>
+<li><strong>Perplexity</strong>: It predicts the class label based on the perplexity of the claim under a pretrained GPT2 language model, following the assumption that "misinformation has high perplexity". </li>
+<li><strong>LM as Fact Checker</strong> <a href="https://arxiv.org/abs/2006.04102">(Lee et al., 2020b)</a>: It leverages the implicit knowledge stored in the pretrained BERT language model to verify a claim. </li>
+</ul>
+<hr>
+</div>
+<div class="col-lg-8 col-md-8 col-sm-8 col-xs-8 thumb blogcontent">
+<img alt="zero-shot-experiment" src="images/2108/zero-shot-experiment.png" class="img-fluid">
+<br><br></div><div class="col-lg-8 col-md-8 col-sm-8 col-xs-8 thumb blogcontent"><p><b>Figure 3</b>&mdash;<em>Our zero-shot experiment.</em></p>
+<hr><br>
+<p>QACG attains 78.1 F1 on the FEVER-S/R and 62.6 F1 on the FEVER-S/R/N. Although QACG does not see any human-labelled (evidence, claim) pair in training, the F1 gap to the fully-supervised model is only 17.0 and 15.2 on these two settings, respectively. <strong>The results demonstrate the effectiveness of QACG in generating good (evidence, claim) pairs for training the fact verification model.</strong> We observe a large performance drop when the supervised model is evaluated on the FEVER-Symmetric test set (−9.6 F1). However, the models trained with our generated data drop only 1.2 and 1.0 F1 drop. This suggests that the wide range of different claims we generate as training data helps eliminate some of the annotation artifacts present in FEVER, leading to a more robust fact verification model. </p>
+<h4>Few-shot Fact Verification</h4>
+<p>The blue solid line in the below Figure shows the F1 scores on FEVER-Symmetric after fine-tuning with different numbers of labeled training data. We compare this with training the model from scratch with the human-labeled data (grey dashed line). Our model performs consistently better than the model without pretraining, regardless of the amount of labeled training data. The improvement is especially prominent in data-poor regimes.  The results show pretraining fact verification with QACG greatly reduces the demand for in-domain humanannotated data. <strong>Our method can provide a "warm start" for fact verification system when applied to a new domain where training data are limited.</strong> </p>
+<hr>
+</div>
+<div class="col-lg-5 col-md-5 col-sm-5 col-xs-5 thumb blogcontent">
+<img alt="few-shot-fact-verification" src="images/2108/few-shot-fact-verification.png" class="img-fluid">
+<br><br></div><div class="col-lg-8 col-md-8 col-sm-8 col-xs-8 thumb blogcontent"><p><b>Figure 4</b>&mdash;<em>Our few-shot fact verification experiment.</em></p>
+<hr><br>
+<h4>Case Study</h4>
+<p>The below Table shows representative claims generated by our model. The claims are fluent, label-cohesive, and exhibit encouraging language variety.  However, one limitation is that our generated claims are mostly <strong>lack of deep reasoning over the evidence</strong>. This is because we finetune the question generator on the SQuAD dataset, in which more than 80% of its questions are shallow factoid questions. </p>
+<hr>
+</div>
+<div class="col-lg-10 col-md-10 col-sm-10 col-xs-10 thumb blogcontent">
+<img alt="example-claims" src="images/2108/example-claims.png" class="img-fluid">
+<br><br></div><div class="col-lg-8 col-md-8 col-sm-8 col-xs-8 thumb blogcontent"><p><b>Figure 5</b>&mdash;<em>Example claims generated by our model in the case study.</em></p>
+<hr><br>
+<h3>Conclusion</h3>
+<p>In this work, we utilize the question generation model to ask different questions for given evidence and convert question–answer pairs into claims with different labels. We show that the generated claims can train a well-performing fact verification model in both the zero-shot and the few-shot learning setting. In summary, our contributions are: </p>
+<ul>
+<li>We explore the possibility of automatically <strong>generating large-scale (evidence, claim) pairs</strong> to train the fact verification model.</li>
+<li>We propose a simple yet general framework <strong>Question Answering for Claim Generation (QACG)</strong> to generate three types of claims from any given evidence: 1) claims that are <strong>supported</strong> by the evidence, 2) claims that are <strong>refuted</strong> by the evidence, and 3) claims that the evidence does <strong>Not have Enough Information (NEI)</strong> to verify.</li>
+<li>We show that the generated training data can greatly benefit the fact verification system in both <strong>zero-shot and few-shot learning settings</strong>. </li>
+</ul>
+<p>You can check out our full paper <a href="https://arxiv.org/pdf/2105.14682.pdf">here</a> and our source code/data on <a href="https://github.com/teacherpeterpan/Zero-shot-Fact-Verification">GitHub</a>. If you have questions, please feel free to email us.</p>
+<ul>
+<li>Liangming Pan: <a href="mailto:liangmingpan@u.nus.edu">liangmingpan@u.nus.edu</a></li>
+<li>Wenhu Chen: <a href="mailto:wenhuchen@cs.ucsb.edu">wenhuchen@cs.ucsb.edu</a></li>
+</ul>
+<h3><strong>Acknowledgments</strong></h3>
+<p>This blog post is based on the paper:</p>
+<ul>
+<li><a href="https://arxiv.org/pdf/2105.14682.pdf">Zero-shot Fact Verification by Claim Generation</a>. <a href="https://liangmingpan.com/">Liangming Pan</a>, <a href="https://wenhuchen.github.io/">Wenhu Chen</a>, <a href="https://xwhan.github.io/">Wenhan Xiong</a>, <a href="https://www.comp.nus.edu.sg/~kanmy/">Min-Yen Kan</a>, and <a href="https://sites.cs.ucsb.edu/~william/">William Yang Wang</a>. ACL-IJCNLP 2021. </li>
+</ul>
+<p>Many thanks to my collaborators and advisors, Wenhu Chen, Wenhan Xiong, Min-Yen Kan and William Yang Wang for their help. Many thanks to Michael Saxon for edits on this blog post. </p>
+
+
+</div>
+
+
+
+            </div>
+        </div>
+
+        <br>
+
+        <hr>
+
+        <div class="container footer">
+            <div class="row">
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 thumb">
+                    <p>
+                        Copyright &copy; UCSB NLP Group<br/>
+                        3530 Phelps Hall<br/>
+                        University of California, Santa Barbara<br/>
+                        Santa Barbara, CA 93106-5110
+                    </p>
+                </div>
+
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 thumb">
+                    <p>
+                        Links<br/>
+                        <a href="http://www.cs.ucsb.edu" target="_blank">UCSB CS Department</a><br/>
+                        <a href="https://engineering.ucsb.edu" target="_blank">UCSB College of Engineering</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </body>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script>window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')</script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+</html>
