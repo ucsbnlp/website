@@ -147,9 +147,11 @@
 <img alt="Comparison of average BERTScore values across Wikipedia topic-prompted GPT-2 generations for varying model sizes and temperatures. Generations for each size-temperature pair are evaluated against other generations for their specific topic. Wilcoxon rank-sum p-values for the large-small model pairs at each temperature are listed at the bottom." class="img-fluid" src="images/2108/diversity.png" class="img-fluid">
 <br><br></div><div class="col-lg-8 col-md-8 col-sm-8 col-xs-8 thumb blogcontent"><p><b>Figure 5</b>&mdash;<em>Comparison of average BERTScore values across Wikipedia topic-prompted GPT-2 generations for varying model sizes and temperatures. Generations for each size-temperature pair are evaluated against other generations for their specific topic. Wilcoxon rank-sum p-values for the large-small model pairs at each temperature are listed at the bottom.</em></p>
 <hr><br>
-<p>When analyzing these two properties against various model settings, we learn:
-1. All three sentiment analysis models exhibit the same downward trend among score and temperature values. As such, the generated texts at these lower temperature levels are associated with strong negative emotions.
-2. As the temperature increases and model size decreases, the textual similarity across generations for each topic decreases. This further confirms our human evaluated results of more memorization at larger model sizes, which allows for the generation of contextually aligned outputs for specific topics.</p>
+<p>When analyzing these two properties against various model settings, we learn:</p>
+<ol>
+<li>All three sentiment analysis models exhibit the same downward trend among score and temperature values. As such, the generated texts at these lower temperature levels are associated with strong negative emotions.</li>
+<li>As the temperature increases and model size decreases, the textual similarity across generations for each topic decreases. This further confirms our human evaluated results of more memorization at larger model sizes, which allows for the generation of contextually aligned outputs for specific topics.</li>
+</ol>
 <h3>Moving Forward</h3>
 <p>In our work, we study the generation of harmful text in NLG models. This behavior  can be traced to the memorization of training data and as such, we outline a few steps that can be taken to reduce this harm.</p>
 <ol>
