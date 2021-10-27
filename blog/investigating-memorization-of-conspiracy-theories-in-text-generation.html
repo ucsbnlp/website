@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Investigating Memorization of Conspiracy Theories in Text Generation - UCSB NLP Blog</title>
+        <meta name="description" content="The UC Santa Barbara NLP group studies the theoretical foundation and practical algorithms for language technologies. We tackle challenging learning and reasoning problems under uncertainty, and pursue answers via studies of machine Learning, deep Learning, and interdisciplinary data science.">
+        <meta name="keywords" content="UCSB,UC Santa Barbara,NLP,Natural Language Processing,William Wang,Computer Science,Reinforcement Learning,Deep Learning">
+        <meta name="author" content="UCSB NLP Group">
+
+        <link rel="icon" href="../static/favicon.ico">
+
+        <link rel="stylesheet" href="../css/bootstrap.min.css">
+        <link rel="stylesheet" href="../css/fonts.css">
+        <link rel="stylesheet" href="../css/custom.css">
+        <link rel="stylesheet" href="./theme/css/code.css">
+        <!-- FOR KATEX -->
+        <link rel="stylesheet"
+              href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css"
+              crossorigin="anonymous">
+        <link href="feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="UCSB NLP Blog Full Atom Feed" />
+        <link href="feeds/all.rss.xml" type="application/rss+xml" rel="alternate" title="UCSB NLP Blog Full RSS Feed" />
+    </head>
+
+    <body style="margin:0px;padding:0px;">
+        <nav class="navbar navbar-expand-lg navbar-dark navbar-custom navbar-static-top">
+            <div class="container">
+                <a class="navbar-brand" href="index.html"><b>UC SANTA BARBARA NLP GROUP</b></a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#content" aria-controls="navbarsExample07" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="content">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="../index.html">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../people.html">People</a>
+                        </li>
+                        <li class="nav-item active">
+                            <a class="nav-link" href="index.html"><b>Blog</b></a>
+                        </li>                        
+                        <li class="nav-item">
+                            <a class="nav-link" href="../publications.html">Publications</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../software.html">Software</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../sponsor.html">Sponsors</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="http://www.cs.ucsb.edu/~william/hiring.html" target="_blank">Join Us</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../contact.html">Contact</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <br/>
+        <br/>
+
+        <div class="container" align="justify">
+            <div class="row justify-content-center">
+
+<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 thumb">
+    <h2><a href="./investigating-memorization-of-conspiracy-theories-in-text-generation.html" rel="bookmark"
+         title="Permalink to Investigating Memorization of Conspiracy Theories in Text Generation">Investigating Memorization of Conspiracy Theories in Text Generation</a></h2>
+</div>
+
+<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 thumb">
+      <h5><a href="./author/sharon-levy.html">Sharon Levy</a></h5>
+    <b>Mon 02 August 2021</b>
+</div>
+
+<div class="text-right col-lg-6 col-md-6 col-sm-6 col-xs-6 thumb">
+    <b>Category: <a href="./category/acl-2021.html">ACL 2021</a><br>
+    Tags: <a href="./tag/language-generation.html">Language generation</a>, <a href="./tag/conspiracy-theories.html">conspiracy theories</a>, <a href="./tag/fairness.html">fairness</a></b>
+</div>
+
+<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 thumb blogcontent">
+    <hr>
+</div>
+
+<div class="col-lg-8 col-md-8 col-sm-8 col-xs-8 thumb blogcontent">
+
+
+    <h3>Overview</h3>
+<p>What do language models memorize? As the creation and adoption of natural language generation (NLG) models increases, questions arise regarding the information these models learn. While it is known that NLG models produce biased and harmful text, most studies do not evaluate what leads to these generations: memorization of training data. </p>
+<p>In our ACL 2021 Findings <a href="https://aclanthology.org/2021.findings-acl.416/">paper</a>, we aim to determine the extent to which GPT-2 (and other language models) memorizes and generates harmful information. Unlike previous studies, we perform our analysis <strong>without access to the model's training data</strong>. While this makes the task of detecting memorized data more difficult, it allows our methods to generalize to models that do not release their large-scale training sets alongside published models. Additionally, we perform our analysis with regards to a particularly dangerous type of misinformation: conspiracy theories. </p>
+<p>We propose methods to evaluate the memorization of this text, through various model settings and linguistic analysis. </p>
+<h3>Memorization in NLG Models</h3>
+<p>In general, generated text can be broken down into three categories:</p>
+<ol>
+<li>Memorized: generated text with exact matches existing within the training data.</li>
+<li>Generalized: generations that do not have exact matches in the data but produce text that follows the same ideas as those in the training data.</li>
+<li>Hallucinated: generations about topics that are neither factually correct nor follow any of the existing conspiracy theories surrounding the topic</li>
+</ol>
+<p>Most studies either evaluate memorized vs. generalized text or group memorized and generalized text together to evaluate against hallucinated text. As distinguishing among these three categories without access to training data is exceptionally difficult, we consider both memorized and generalized text as "memorized".</p>
+<h3>Varying Model Settings</h3>
+<h4>Human Evaluation</h4>
+<p>Two simple model parameters to evaluate are model size and temperature. To proceed with our analysis, we create a dataset of 17 well-known conspiracy theory topics and generic prompts for each to feed into the model. These are prompts such as "The Earth is" and "The Holocaust is". In order to determine whether a piece of generated text affirms or states a conspiracy theory as fact, we crowdsource with an additional layer of manual inspection. Our findings show that reducing model size drastically lowers the capacity for GPT-2 to retain information about well-known conspiracy theories, as seen in Figure 1. </p>
+<hr>
+</div>
+<div class="col-lg-5 col-md-5 col-sm-5 col-xs-5 thumb blogcontent">
+<img alt="Percentage of conspiracy theories generated by GPT-2 models of size small, medium, and large when prompted on 17 different conspiracy theory topics. Each topic is used to generate 20 sequences for a total of 340 generations." class="img-fluid" src="images/2108/size.png" class="img-fluid">
+<br><br></div><div class="col-lg-8 col-md-8 col-sm-8 col-xs-8 thumb blogcontent"><p><b>Figure 1</b>&mdash;<em>Percentage of conspiracy theories generated by GPT-2 models of size small, medium, and large when prompted on 17 different conspiracy theory topics. Each topic is used to generate 20 sequences for a total of 340 generations.</em></p>
+<hr><br>
+<p>We further evaluate changes in temperature while controlling for model size. By decreasing the temperature during generation, we are able to reduce randomness in the model's outputs. We can then analyze the curve of produced conspiracy theories and discover the topics for which the model has deeply memorized conspiracy theories (Figure 2).</p>
+<hr>
+</div>
+<div class="col-lg-5 col-md-5 col-sm-5 col-xs-5 thumb blogcontent">
+<img alt="Percentage of conspiracy theories generated by GPT-2 Large at varying temperatures when prompted on 17 different conspiracy theory topics. Each topic is used to generate 20 sequences for a total of 340 generations." class="img-fluid" src="images/2108/temperature.png" class="img-fluid">
+<br><br></div><div class="col-lg-8 col-md-8 col-sm-8 col-xs-8 thumb blogcontent"><p><b>Figure 2</b>&mdash;<em>Percentage of conspiracy theories generated by GPT-2 Large at varying temperatures when prompted on 17 different conspiracy theory topics. Each topic is used to generate 20 sequences for a total of 340 generations.</em></p>
+<hr><br>
+<h4>Automated Evaluation</h4>
+<p>Performing human evaluation while probing for model memorization is not necessarily efficient. Therefore, we take steps to automatically evaluate NLG models for the memorization and generation of conspiracy theories. To do this we:</p>
+<ol>
+<li>Generate several thousand sequences of text with the prompt "The conspiracy theory is that" and extract the generated text without the prompt at different temperature settings.</li>
+<li>Calculate the BLEU score for each generated sequence against the first page of Google search results for the text.</li>
+<li>Calculate the perplexity of each generated sequence for each GPT-2 model size.</li>
+<li>Compute the correlation of the BLEU Google results scores with GPT-2 perplexity.</li>
+</ol>
+<hr>
+</div>
+<div class="col-lg-5 col-md-5 col-sm-5 col-xs-5 thumb blogcontent">
+<img alt="Spearman correlation of model perplexity vs. Google search BLEU score for GPT-2 generated conspiracy theories across varying temperature settings. Each generated theory is evaluated against the first page of Google search results with the BLEU metric." class="img-fluid" src="images/2108/automated.png" class="img-fluid">
+<br><br></div><div class="col-lg-8 col-md-8 col-sm-8 col-xs-8 thumb blogcontent"><p><b>Figure 3</b>&mdash;<em>Spearman correlation of model perplexity vs. Google search BLEU score for GPT-2 generated conspiracy theories across varying temperature settings. Each generated theory is evaluated against the first page of Google search results with the BLEU metric.</em></p>
+<hr><br>
+<p>Our results can be seen in Figure 3. These follow our human evaluation results and show a strong relationship between a generated conspiracy theory’s perplexity and its appearance in Google search results for larger model sizes and lower temperatures. This can allow future research to move towards the creation of automated evaluation metrics for difficult tasks such as text memorization.</p>
+<h3>Linguistic Analysis</h3>
+<p>In addition to evaluating how different model settings affect the generation of memorized conspiracy theories, we further investigate whether we find any patterns among different linguistic properties in our generated sequences. Figures 4 and 5 show results for sentiment analysis and linguistic diversity (with BERTScore), respectively. </p>
+<hr>
+</div>
+<div class="col-lg-5 col-md-5 col-sm-5 col-xs-5 thumb blogcontent">
+<img alt="Comparison of average sentiment scores across GPT-2 Large generated conspiracy theories with the DistilBERT (dBERT), VADER, and TextBlob sentiment classifiers along with the Wilcoxon rank-sum p-values for generation pairs of temperature 0.4 and 1. The conspiracy theories are generated at the temperature values of 0.4, 0.7, and 1.0 and sentiment scores range from -1 to 1." class="img-fluid" src="images/2108/sentiment.png" class="img-fluid">
+<br><br></div><div class="col-lg-8 col-md-8 col-sm-8 col-xs-8 thumb blogcontent"><p><b>Figure 4</b>&mdash;<em>Comparison of average sentiment scores across GPT-2 Large generated conspiracy theories with the DistilBERT (dBERT), VADER, and TextBlob sentiment classifiers along with the Wilcoxon rank-sum p-values for generation pairs of temperature 0.4 and 1. The conspiracy theories are generated at the temperature values of 0.4, 0.7, and 1.0 and sentiment scores range from -1 to 1.</em></p>
+<hr><br>
+<hr>
+</div>
+<div class="col-lg-5 col-md-5 col-sm-5 col-xs-5 thumb blogcontent">
+<img alt="Comparison of average BERTScore values across Wikipedia topic-prompted GPT-2 generations for varying model sizes and temperatures. Generations for each size-temperature pair are evaluated against other generations for their specific topic. Wilcoxon rank-sum p-values for the large-small model pairs at each temperature are listed at the bottom." class="img-fluid" src="images/2108/diversity.png" class="img-fluid">
+<br><br></div><div class="col-lg-8 col-md-8 col-sm-8 col-xs-8 thumb blogcontent"><p><b>Figure 5</b>&mdash;<em>Comparison of average BERTScore values across Wikipedia topic-prompted GPT-2 generations for varying model sizes and temperatures. Generations for each size-temperature pair are evaluated against other generations for their specific topic. Wilcoxon rank-sum p-values for the large-small model pairs at each temperature are listed at the bottom.</em></p>
+<hr><br>
+<p>When analyzing these two properties against various model settings, we learn:</p>
+<ol>
+<li>All three sentiment analysis models exhibit the same downward trend among score and temperature values. As such, the generated texts at these lower temperature levels are associated with strong negative emotions.</li>
+<li>As the temperature increases and model size decreases, the textual similarity across generations for each topic decreases. This further confirms our human evaluated results of more memorization at larger model sizes, which allows for the generation of contextually aligned outputs for specific topics.</li>
+</ol>
+<h3>Moving Forward</h3>
+<p>In our work, we study the generation of harmful text in NLG models. This behavior  can be traced to the memorization of training data and as such, we outline a few steps that can be taken to reduce this harm.</p>
+<ol>
+<li>Clean datasets of misinformation and biases before training.</li>
+<li>Supplementing the existing dataset with a smaller "clean" dataset to oversample truthful/non-harmful information.</li>
+<li>Restrict model size.</li>
+</ol>
+<p>While each of these has its drawbacks (such as lower generation quality), the general minimization of harmful generation is of great importance and should be accounted for in future models.</p>
+
+
+</div>
+
+
+
+            </div>
+        </div>
+
+        <br>
+
+        <hr>
+
+        <div class="container footer">
+            <div class="row">
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 thumb">
+                    <p>
+                        Copyright &copy; UCSB NLP Group<br/>
+                        3530 Phelps Hall<br/>
+                        University of California, Santa Barbara<br/>
+                        Santa Barbara, CA 93106-5110
+                    </p>
+                </div>
+
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 thumb">
+                    <p>
+                        Links<br/>
+                        <a href="http://www.cs.ucsb.edu" target="_blank">UCSB CS Department</a><br/>
+                        <a href="https://engineering.ucsb.edu" target="_blank">UCSB College of Engineering</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </body>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script>window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')</script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+</html>
